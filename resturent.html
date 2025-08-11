@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Foodie — Zomato-like Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --accent:#ff4d4f; --muted:#6b7280; --bg:#0f1724; --card:#0b1020; --glass: rgba(255,255,255,0.03);
+      --glass-2: rgba(255,255,255,0.02);
+      --radius:14px; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background: linear-gradient(180deg,#071029 0%,#071025 60%); color:#e6eef8; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    header{display:flex;align-items:center;gap:18px;padding:20px 28px;background:transparent;position:sticky;top:0;backdrop-filter: blur(6px);z-index:20}
+    .logo{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo .mark{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ff7a7a);display:flex;align-items:center;justify-content:center;font-weight:800}
+    .searchbar{flex:1;display:flex;gap:8px;align-items:center;background:var(--glass);padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .searchbar input{flex:1;padding:10px;border:0;background:transparent;color:inherit;font-size:15px}
+    .controls{display:flex;gap:12px;align-items:center}
+    .btn{background:linear-gradient(90deg,var(--accent),#ff7a7a);border:none;padding:10px 14px;border-radius:10px;color:#081020;font-weight:700;cursor:pointer}
+    .container{max-width:1150px;margin:26px auto;padding:0 20px}
+
+    /* layout */
+    .grid{display:grid;grid-template-columns: 320px 1fr;gap:20px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr} header{padding:14px}}
+
+    /* sidebar */
+    .sidebar{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .filter{display:flex;flex-direction:column;gap:10px}
+    .chip{padding:8px 10px;border-radius:999px;background:var(--glass);display:inline-block;font-weight:600;cursor:pointer}
+
+    /* listings */
+    .listings{display:grid;gap:12px}
+    .restaurant{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--glass-2);border:1px solid rgba(255,255,255,0.02)}
+    .restaurant img{width:110px;height:88px;border-radius:8px;object-fit:cover}
+    .r-info{flex:1}
+    .r-head{display:flex;justify-content:space-between;gap:8px}
+    .r-name{font-weight:700}
+    .meta{color:var(--muted);font-size:13px}
+    .r-tags{display:flex;gap:8px;margin-top:8px}
+    .r-tags .tag{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px}
+
+    /* main */
+    .hero{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px;border-radius:14px;background:linear-gradient(90deg,rgba(255,77,79,0.06), rgba(255,122,122,0.03));border:1px solid rgba(255,255,255,0.02)}
+    .hero h1{margin:0;font-size:22px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
+
+    .card{border-radius:14px;padding:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);}
+    .card img{width:100%;height:140px;object-fit:cover;border-radius:10px}
+    .card .meta{display:flex;justify-content:space-between;margin-top:8px}
+
+    /* modal & menu */
+    .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal{max-width:880px;width:100%;background:linear-gradient(180deg,#051022,#081426);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .menu-list{display:grid;gap:10px;max-height:60vh;overflow:auto;padding-right:8px}
+    .dish{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.01)}
+    .dish .d-left{display:flex;gap:12px;align-items:center}
+    .dish img{width:64px;height:56px;object-fit:cover;border-radius:8px}
+    .qty{display:flex;gap:6px;align-items:center}
+    .qty button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:inherit}
+
+    /* cart */
+    .cart{position:fixed;right:18px;bottom:18px;background:linear-gradient(180deg,#071226,#08182b);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);width:320px;max-height:70vh;overflow:auto}
+    .cart h3{margin:0 0 8px 0}
+    .cart-item{display:flex;justify-content:space-between;gap:8px;padding:8px;border-radius:8px}
+
+    /* small screens */
+    @media (max-width:600px){.cart{width:92%;left:4%;right:4%}}
+
+    footer{margin-top:40px;padding:30px 0;color:var(--muted);text-align:center}
+    .empty{opacity:0.7;text-align:center;padding:40px;border-radius:12px;border:1px dashed rgba(255,255,255,0.03)}
+
+    /* helpers */
+    .muted{color:var(--muted)}
+    .rate{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-weight:700}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="mark">F</div>
+      <div>
+        <div style="font-size:15px">Foodie</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Discover delicious food near you</div>
+      </div>
+    </div>
+
+    <div class="searchbar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.35-4.35" stroke="white" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="white" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <input id="search" placeholder="Search for restaurants, dishes or cuisines..." />
+      <div class="controls">
+        <button class="btn" id="nearbyBtn">Near me</button>
+      </div>
+    </div>
+
+    <div style="width:16px"></div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <aside class="sidebar">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><strong>Filters</strong><span class="muted">Quick</span></div>
+        <div class="filter" id="filters">
+          <div>
+            <div style="margin-bottom:8px;color:var(--muted)">Cuisine</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div class="chip" data-cuisine="All">All</div>
+              <div class="chip" data-cuisine="Indian">Indian</div>
+              <div class="chip" data-cuisine="Chinese">Chinese</div>
+              <div class="chip" data-cuisine="Italian">Italian</div>
+              <div class="chip" data-cuisine="Fast Food">Fast Food</div>
+            </div>
+          </div>
+
+          <div>
+            <div style="margin-bottom:8px;color:var(--muted)">Sort</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div class="chip" data-sort="pop">Popular</div>
+              <div class="chip" data-sort="rating">Top Rated</div>
+              <div class="chip" data-sort="time">Fastest</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Open now</div>
+          <label style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" id="openNow"> <span class="muted">Show only open restaurants</span></label>
+
+        </div>
+
+        <div style="margin-top:18px">
+          <div style="margin-bottom:8px;color:var(--muted)">Top picks</div>
+          <div class="listings" id="topPicks"></div>
+        </div>
+
+      </aside>
+
+      <section>
+        <div class="hero">
+          <div>
+            <h1>Delicious meals, delivered hot</h1>
+            <div class="muted" style="margin-top:6px">Explore restaurants, read menus and order online.</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input id="location" placeholder="Enter city or pin code" style="padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit" />
+            <button class="btn" id="applyLocation">Apply</button>
+          </div>
+        </div>
+
+        <div class="cards" id="restaurantGrid"></div>
+
+        <footer>
+          Built with ❤️ — Demo Zomato-like site. Save this file as <code>index.html</code> and open it in your browser.
+        </footer>
+      </section>
+    </div>
+  </main>
+
+  <!-- overlay modal for menu -->
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div id="modalName" style="font-weight:800;font-size:18px"></div>
+          <div id="modalMeta" class="muted" style="font-size:13px"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="rate" id="modalRate">4.5</div>
+          <button id="closeModal" class="chip">Close</button>
+        </div>
+      </div>
+
+      <div class="menu-list" id="menuList"></div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px">
+        <button class="chip" id="viewCart">View Cart</button>
+        <button class="btn" id="checkoutModal">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- cart -->
+  <div class="cart" id="cart">
+    <h3>Cart</h3>
+    <div id="cartItems"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="muted">Total</div>
+      <div id="cartTotal" style="font-weight:800">₹0</div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button class="chip" id="clearCart">Clear</button>
+      <button class="btn" id="checkoutBtn">Place Order</button>
+    </div>
+  </div>
+
+  <script>
+    // Sample data (In a real app this comes from API)
+    const restaurants = [
+      {id:1,name:'Spice Villa',cuisine:'Indian',rating:4.5,time:30,priceForTwo:400,open:true,cover:'https://images.unsplash.com/photo-1604908177522-9b2a3b5bd6b1?auto=format&fit=crop&w=800&q=60',tags:['Biryani','Thali'] ,menu:[{id:'i1',name:'Chicken Biryani',price:220,img:'https://images.unsplash.com/photo-1604908177522-9b2a3b5bd6b1?auto=format&fit=crop&w=800&q=60'},{id:'i2',name:'Paneer Butter Masala',price:180,img:'https://images.unsplash.com/photo-1604908177522-9b2a3b5bd6b1?auto=format&fit=crop&w=800&q=60'}]},
+      {id:2,name:'Dragon Wok',cuisine:'Chinese',rating:4.2,time:25,priceForTwo:300,open:false,cover:'https://images.unsplash.com/photo-1604908813929-1d3a2e3f1b6d?auto=format&fit=crop&w=800&q=60',tags:['Noodles','Szechuan'],menu:[{id:'c1',name:'Chow Mein',price:140,img:'https://images.unsplash.com/photo-1604908813929-1d3a2e3f1b6d?auto=format&fit=crop&w=800&q=60'},{id:'c2',name:'Manchurian',price:160,img:'https://images.unsplash.com/photo-1604908813929-1d3a2e3f1b6d?auto=format&fit=crop&w=800&q=60'}]},
+      {id:3,name:'Bella Italia',cuisine:'Italian',rating:4.7,time:40,priceForTwo:700,open:true,cover:'https://images.unsplash.com/photo-1548946526-f69e2424cf45?auto=format&fit=crop&w=800&q=60',tags:['Pasta','Pizza'],menu:[{id:'p1',name:'Margherita Pizza',price:420,img:'https://images.unsplash.com/photo-1548946526-f69e2424cf45?auto=format&fit=crop&w=800&q=60'},{id:'p2',name:'Penne Alfredo',price:280,img:'https://images.unsplash.com/photo-1548946526-f69e2424cf45?auto=format&fit=crop&w=800&q=60'}]},
+      {id:4,name:'Burger Rush',cuisine:'Fast Food',rating:4.1,time:18,priceForTwo:250,open:true,cover:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=60',tags:['Burgers','Fries'],menu:[{id:'b1',name:'Classic Beef Burger',price:180,img:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=60'},{id:'b2',name:'Fries',price:80,img:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=60'}]}
+    ];
+
+    // state
+    let state = {query:'',cuisine:'All',sort:'pop',openOnly:false,cart:{}};
+
+    const restaurantGrid = document.getElementById('restaurantGrid');
+    const topPicks = document.getElementById('topPicks');
+    const searchInput = document.getElementById('search');
+    const overlay = document.getElementById('overlay');
+    const modalName = document.getElementById('modalName');
+    const modalMeta = document.getElementById('modalMeta');
+    const modalRate = document.getElementById('modalRate');
+    const menuList = document.getElementById('menuList');
+    const cartEl = document.getElementById('cartItems');
+    const cartTotalEl = document.getElementById('cartTotal');
+
+    // init
+    function init(){
+      // render UI
+      renderRestaurants();
+      renderTopPicks();
+      bindFilters();
+      loadCart();
+    }
+
+    function renderRestaurants(){
+      const list = filteredAndSorted();
+      restaurantGrid.innerHTML = '';
+      if(list.length===0){
+        restaurantGrid.innerHTML = `<div class=\"empty\">No restaurants match your search</div>`;
+        return;
+      }
+      list.forEach(r=>{
+        const div = document.createElement('div'); div.className='card';
+        div.innerHTML = `
+          <img src="${r.cover}" alt="${r.name}">
+          <div style=\"display:flex;justify-content:space-between;align-items:center;margin-top:10px\">
+            <div>
+              <div style=\"font-weight:800\">${r.name}</div>
+              <div class=\"muted\" style=\"font-size:13px;margin-top:6px\">${r.cuisine} • ₹${r.priceForTwo} for two • ${r.time} mins</div>
+            </div>
+            <div style=\"display:flex;flex-direction:column;align-items:flex-end;gap:6px\">
+              <div class=\"rate\">${r.rating}</div>
+              <button class=\"chip\" data-id=\"${r.id}\">View Menu</button>
+            </div>
+          </div>
+        `;
+        restaurantGrid.appendChild(div);
+      });
+
+      // view menu handlers
+      document.querySelectorAll('.chip[data-id]').forEach(btn=>{
+        btn.addEventListener('click',e=>{
+          const id = +e.currentTarget.dataset.id;
+          openMenu(id);
+        });
+      });
+    }
+
+    function renderTopPicks(){
+      const top = restaurants.slice().sort((a,b)=>b.rating-a.rating).slice(0,3);
+      topPicks.innerHTML='';
+      top.forEach(r=>{
+        const el = document.createElement('div'); el.className='restaurant';
+        el.innerHTML = `<img src="${r.cover}" alt="${r.name}"><div class=\"r-info\"><div class=\"r-head\"><div class=\"r-name\">${r.name}</div><div class=\"rate\">${r.rating}</div></div><div class=\"meta\">${r.cuisine} • ${r.time} min</div><div class=\"r-tags\">${r.tags.map(t=>`<div class=\"tag\">${t}</div>`).join('')}</div></div>`;
+        topPicks.appendChild(el);
+      });
+    }
+
+    function filteredAndSorted(){
+      let list = restaurants.filter(r=>{
+        const q = state.query.trim().toLowerCase();
+        if(state.cuisine!=='All' && r.cuisine!==state.cuisine) return false;
+        if(state.openOnly && !r.open) return false;
+        if(q){
+          return r.name.toLowerCase().includes(q) || r.cuisine.toLowerCase().includes(q) || r.tags.join(' ').toLowerCase().includes(q);
+        }
+        return true;
+      });
+      if(state.sort==='rating') list.sort((a,b)=>b.rating-a.rating);
+      else if(state.sort==='time') list.sort((a,b)=>a.time-b.time);
+      else list.sort((a,b)=>b.rating-b.rating || a.time-b.time);
+      return list;
+    }
+
+    searchInput.addEventListener('input',e=>{ state.query = e.target.value; renderRestaurants(); });
+    document.getElementById('openNow').addEventListener('change',e=>{ state.openOnly = e.target.checked; renderRestaurants(); });
+
+    function bindFilters(){
+      document.querySelectorAll('.chip[data-cuisine]').forEach(c=>{
+        c.addEventListener('click',e=>{ document.querySelectorAll('.chip[data-cuisine]').forEach(x=>x.style.opacity=0.8); e.currentTarget.style.opacity=1; state.cuisine = e.currentTarget.dataset.cuisine; renderRestaurants(); });
+      });
+      document.querySelectorAll('.chip[data-sort]').forEach(c=>{
+        c.addEventListener('click',e=>{ document.querySelectorAll('.chip[data-sort]').forEach(x=>x.style.opacity=0.8); e.currentTarget.style.opacity=1; state.sort = e.currentTarget.dataset.sort; renderRestaurants(); });
+      });
+
+      document.getElementById('nearbyBtn').addEventListener('click',()=>{ alert('Demo: Geolocation would be used here in a real app.'); });
+      document.getElementById('applyLocation').addEventListener('click',()=>{ alert('Location applied: ' + document.getElementById('location').value); });
+    }
+
+    function openMenu(restId){
+      const r = restaurants.find(x=>x.id===restId);
+      if(!r) return;
+      modalName.textContent = r.name;
+      modalMeta.textContent = `${r.cuisine} • ₹${r.priceForTwo} for two • ${r.time} mins`;
+      modalRate.textContent = r.rating;
+      menuList.innerHTML = '';
+      r.menu.forEach(d=>{
+        const di = document.createElement('div'); di.className='dish';
+        di.innerHTML = `<div class=\"d-left\"><img src=\"${d.img}\" alt=\"${d.name}\"><div><div style=\"font-weight:700\">${d.name}</div><div class=\"muted\">₹${d.price}</div></div></div><div style=\"display:flex;flex-direction:column;gap:8px;align-items:flex-end\"><div class=\"muted\">${r.name}</div><div class=\"qty\"><button data-add=\"${r.id}::${d.id}\">+</button></div></div>`;
+        menuList.appendChild(di);
+      });
+      // add handlers
+      menuList.querySelectorAll('button[data-add]').forEach(btn=>{
+        btn.addEventListener('click',e=>{
+          const [rid,did] = e.currentTarget.dataset.add.split('::');
+          addToCart(+rid,did);
+        });
+      });
+
+      overlay.style.display='flex';
+    }
+    document.getElementById('closeModal').addEventListener('click',()=>overlay.style.display='none');
+    document.getElementById('overlay').addEventListener('click',e=>{ if(e.target===overlay) overlay.style.display='none' });
+
+    // CART LOGIC
+    function loadCart(){
+      const raw = localStorage.getItem('foodie_cart');
+      state.cart = raw ? JSON.parse(raw) : {};
+      renderCart();
+    }
+    function saveCart(){ localStorage.setItem('foodie_cart', JSON.stringify(state.cart)); renderCart(); }
+
+    function addToCart(restaurantId, dishId){
+      const rest = restaurants.find(r=>r.id===restaurantId);
+      const dish = rest.menu.find(m=>m.id===dishId);
+      const key = `${restaurantId}::${dishId}`;
+      if(!state.cart[key]) state.cart[key] = {restaurantId, dishId, qty:0, name:dish.name, price:dish.price};
+      state.cart[key].qty += 1;
+      saveCart();
+      alert(`${dish.name} added to cart`);
+    }
+
+    function renderCart(){
+      cartEl.innerHTML = '';
+      const keys = Object.keys(state.cart);
+      if(keys.length===0){ cartEl.innerHTML = '<div class="muted">Your cart is empty</div>'; cartTotalEl.textContent = '₹0'; return; }
+      let total = 0;
+      keys.forEach(k=>{
+        const it = state.cart[k]; total += it.qty * it.price;
+        const row = document.createElement('div'); row.className='cart-item';
+        row.innerHTML = `<div><div style=\"font-weight:700\">${it.name}</div><div class=\"muted\">₹${it.price} x ${it.qty}</div></div><div style=\"display:flex;flex-direction:column;gap:6px;align-items:flex-end\"><div style=\"font-weight:700\">₹${it.price*it.qty}</div><div style=\"display:flex;gap:6px\"><button data-dec=\"${k}\">-</button><button data-inc=\"${k}\">+</button></div></div>`;
+        cartEl.appendChild(row);
+      });
+      cartTotalEl.textContent = `₹${total}`;
+
+      // inc/dec handlers
+      cartEl.querySelectorAll('button[data-inc]').forEach(b=>b.addEventListener('click',e=>{ const k=e.currentTarget.dataset.inc; state.cart[k].qty+=1; saveCart(); }));
+      cartEl.querySelectorAll('button[data-dec]').forEach(b=>b.addEventListener('click',e=>{ const k=e.currentTarget.dataset.dec; state.cart[k].qty-=1; if(state.cart[k].qty<=0) delete state.cart[k]; saveCart(); }));
+    }
+
+    document.getElementById('clearCart').addEventListener('click',()=>{ state.cart={}; saveCart(); });
+    document.getElementById('checkoutBtn').addEventListener('click',()=>placeOrder());
+
+    function placeOrder(){
+      const items = Object.values(state.cart);
+      if(items.length===0){ alert('Your cart is empty. Add items before checkout.'); return; }
+      // simple simulation
+      const total = items.reduce((s,i)=>s + i.qty*i.price,0);
+      const payload = {items, total, orderedAt: new Date().toISOString()};
+      // in a real app you'd POST this to server
+      alert('Order placed successfully! Total: ₹' + total);
+      state.cart = {};
+      saveCart();
+    }
+
+    // load
+    init();
+  </script>
+</body>
+</html>
