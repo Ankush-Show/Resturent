@@ -27,16 +27,15 @@
     .btn{background:linear-gradient(90deg,var(--accent),#ff7a7a);border:none;padding:10px 14px;border-radius:10px;color:#081020;font-weight:700;cursor:pointer}
     .container{max-width:1150px;margin:26px auto;padding:0 20px}
 
-    /* layout */
     .grid{display:grid;grid-template-columns: 320px 1fr;gap:20px}
     @media (max-width:900px){.grid{grid-template-columns:1fr} header{padding:14px}}
 
-    /* sidebar */
+  
     .sidebar{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
     .filter{display:flex;flex-direction:column;gap:10px}
     .chip{padding:8px 10px;border-radius:999px;background:var(--glass);display:inline-block;font-weight:600;cursor:pointer}
 
-    /* listings */
+  
     .listings{display:grid;gap:12px}
     .restaurant{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--glass-2);border:1px solid rgba(255,255,255,0.02)}
     .restaurant img{width:110px;height:88px;border-radius:8px;object-fit:cover}
@@ -47,7 +46,7 @@
     .r-tags{display:flex;gap:8px;margin-top:8px}
     .r-tags .tag{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px}
 
-    /* main */
+    
     .hero{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px;border-radius:14px;background:linear-gradient(90deg,rgba(255,77,79,0.06), rgba(255,122,122,0.03));border:1px solid rgba(255,255,255,0.02)}
     .hero h1{margin:0;font-size:22px}
     .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
@@ -56,7 +55,7 @@
     .card img{width:100%;height:140px;object-fit:cover;border-radius:10px}
     .card .meta{display:flex;justify-content:space-between;margin-top:8px}
 
-    /* modal & menu */
+  
     .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
     .modal{max-width:880px;width:100%;background:linear-gradient(180deg,#051022,#081426);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
     .menu-list{display:grid;gap:10px;max-height:60vh;overflow:auto;padding-right:8px}
@@ -66,18 +65,17 @@
     .qty{display:flex;gap:6px;align-items:center}
     .qty button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:8px;color:inherit}
 
-    /* cart */
+  
     .cart{position:fixed;right:18px;bottom:18px;background:linear-gradient(180deg,#071226,#08182b);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);width:320px;max-height:70vh;overflow:auto}
     .cart h3{margin:0 0 8px 0}
     .cart-item{display:flex;justify-content:space-between;gap:8px;padding:8px;border-radius:8px}
 
-    /* small screens */
+    
     @media (max-width:600px){.cart{width:92%;left:4%;right:4%}}
 
     footer{margin-top:40px;padding:30px 0;color:var(--muted);text-align:center}
     .empty{opacity:0.7;text-align:center;padding:40px;border-radius:12px;border:1px dashed rgba(255,255,255,0.03)}
 
-    /* helpers */
     .muted{color:var(--muted)}
     .rate{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-weight:700}
   </style>
@@ -198,7 +196,6 @@
   </div>
 
   <script>
-    // Sample data (In a real app this comes from API)
     const restaurants = [
       {id:1,name:'Spice Villa',cuisine:'Indian',rating:4.5,time:30,priceForTwo:400,open:true,cover:'https://images.unsplash.com/photo-1604908177522-9b2a3b5bd6b1?auto=format&fit=crop&w=800&q=60',tags:['Biryani','Thali'] ,menu:[{id:'i1',name:'Chicken Biryani',price:220,img:'https://images.unsplash.com/photo-1604908177522-9b2a3b5bd6b1?auto=format&fit=crop&w=800&q=60'},{id:'i2',name:'Paneer Butter Masala',price:180,img:'https://images.unsplash.com/photo-1604908177522-9b2a3b5bd6b1?auto=format&fit=crop&w=800&q=60'}]},
       {id:2,name:'Dragon Wok',cuisine:'Chinese',rating:4.2,time:25,priceForTwo:300,open:false,cover:'https://images.unsplash.com/photo-1604908813929-1d3a2e3f1b6d?auto=format&fit=crop&w=800&q=60',tags:['Noodles','Szechuan'],menu:[{id:'c1',name:'Chow Mein',price:140,img:'https://images.unsplash.com/photo-1604908813929-1d3a2e3f1b6d?auto=format&fit=crop&w=800&q=60'},{id:'c2',name:'Manchurian',price:160,img:'https://images.unsplash.com/photo-1604908813929-1d3a2e3f1b6d?auto=format&fit=crop&w=800&q=60'}]},
@@ -206,7 +203,7 @@
       {id:4,name:'Burger Rush',cuisine:'Fast Food',rating:4.1,time:18,priceForTwo:250,open:true,cover:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=60',tags:['Burgers','Fries'],menu:[{id:'b1',name:'Classic Beef Burger',price:180,img:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=60'},{id:'b2',name:'Fries',price:80,img:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=60'}]}
     ];
 
-    // state
+    
     let state = {query:'',cuisine:'All',sort:'pop',openOnly:false,cart:{}};
 
     const restaurantGrid = document.getElementById('restaurantGrid');
@@ -220,7 +217,7 @@
     const cartEl = document.getElementById('cartItems');
     const cartTotalEl = document.getElementById('cartTotal');
 
-    // init
+    
     function init(){
       // render UI
       renderRestaurants();
@@ -254,7 +251,7 @@
         restaurantGrid.appendChild(div);
       });
 
-      // view menu handlers
+     
       document.querySelectorAll('.chip[data-id]').forEach(btn=>{
         btn.addEventListener('click',e=>{
           const id = +e.currentTarget.dataset.id;
@@ -316,7 +313,7 @@
         di.innerHTML = `<div class=\"d-left\"><img src=\"${d.img}\" alt=\"${d.name}\"><div><div style=\"font-weight:700\">${d.name}</div><div class=\"muted\">₹${d.price}</div></div></div><div style=\"display:flex;flex-direction:column;gap:8px;align-items:flex-end\"><div class=\"muted\">${r.name}</div><div class=\"qty\"><button data-add=\"${r.id}::${d.id}\">+</button></div></div>`;
         menuList.appendChild(di);
       });
-      // add handlers
+     
       menuList.querySelectorAll('button[data-add]').forEach(btn=>{
         btn.addEventListener('click',e=>{
           const [rid,did] = e.currentTarget.dataset.add.split('::');
@@ -329,7 +326,7 @@
     document.getElementById('closeModal').addEventListener('click',()=>overlay.style.display='none');
     document.getElementById('overlay').addEventListener('click',e=>{ if(e.target===overlay) overlay.style.display='none' });
 
-    // CART LOGIC
+  
     function loadCart(){
       const raw = localStorage.getItem('foodie_cart');
       state.cart = raw ? JSON.parse(raw) : {};
@@ -360,7 +357,7 @@
       });
       cartTotalEl.textContent = `₹${total}`;
 
-      // inc/dec handlers
+     
       cartEl.querySelectorAll('button[data-inc]').forEach(b=>b.addEventListener('click',e=>{ const k=e.currentTarget.dataset.inc; state.cart[k].qty+=1; saveCart(); }));
       cartEl.querySelectorAll('button[data-dec]').forEach(b=>b.addEventListener('click',e=>{ const k=e.currentTarget.dataset.dec; state.cart[k].qty-=1; if(state.cart[k].qty<=0) delete state.cart[k]; saveCart(); }));
     }
@@ -371,7 +368,7 @@
     function placeOrder(){
       const items = Object.values(state.cart);
       if(items.length===0){ alert('Your cart is empty. Add items before checkout.'); return; }
-      // simple simulation
+      
       const total = items.reduce((s,i)=>s + i.qty*i.price,0);
       const payload = {items, total, orderedAt: new Date().toISOString()};
       // in a real app you'd POST this to server
@@ -385,3 +382,4 @@
   </script>
 </body>
 </html>
+
